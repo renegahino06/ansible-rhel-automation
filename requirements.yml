@@ -1,0 +1,4 @@
+---
+roles:
+  - name: ansible-lockdown.RHEL9-CIS
+  - name: redhatofficial.rhel8_cis

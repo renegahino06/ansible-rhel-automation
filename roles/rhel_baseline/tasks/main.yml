@@ -1,0 +1,77 @@
+---
+- name: Mostrar versión detectada
+  debug:
+    msg: "Aplicando hardening baseline para RHEL {{ rhel_version_major }}"
+
+- name: Asegurar que los paquetes base de seguridad estén instalados
+  package:
+    name: "{{ rhel_baseline_packages_common }}"
+    state: present
+
+- name: Eliminar paquetes inseguros
+  package:
+    name: "{{ rhel_baseline_remove_packages_common }}"
+    state: absent
+
+- name: Asegurar que SELinux esté en enforcing
+  selinux:
+    policy: targeted
+    state: "{{ rhel_baseline_selinux_state }}"
+
+- name: Asegurar que firewalld esté instalado
+  package:
+    name: firewalld
+    state: present
+  when: rhel_version_major | int >= 7
+
+- name: Asegurar que firewalld esté habilitado y ejecutándose
+  service:
+    name: firewalld
+    state: "{{ rhel_baseline_firewalld_state }}"
+    enabled: "{{ rhel_baseline_firewalld_enabled }}"
+  when: rhel_version_major | int >= 7
+  notify: restart firewalld
+
+- name: Asegurar que el servicio auditd esté instalado
+  package:
+    name: audit
+    state: present
+
+- name: Asegurar que auditd esté habilitado y ejecutándose
+  service:
+    name: auditd
+    state: started
+    enabled: true
+
+- name: Endurecer configuración de SSH (sshd_config)
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE RHEL BASELINE"
+    block: |
+      Port {{ rhel_baseline_ssh_port }}
+      PermitRootLogin {{ rhel_baseline_ssh_root_login }}
+      PasswordAuthentication {{ rhel_baseline_ssh_password_authentication }}
+      Protocol 2
+      X11Forwarding no
+      ClientAliveInterval 300
+      ClientAliveCountMax 2
+  notify: restart sshd
+
+- name: Asegurar permisos correctos de sshd_config
+  file:
+    path: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Configuración básica de sysctl (ejemplo)
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: yes
+  loop:
+    - { name: 'net.ipv4.ip_forward', value: '0' }
+    - { name: 'net.ipv4.conf.all.accept_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.send_redirects', value: '0' }
+    - { name: 'net.ipv4.conf.all.accept_source_route', value: '0' }

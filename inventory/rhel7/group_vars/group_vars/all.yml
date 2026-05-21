@@ -1,0 +1,3 @@
+---
+rhel_version_major: 7
+hardening_profile: "baseline"

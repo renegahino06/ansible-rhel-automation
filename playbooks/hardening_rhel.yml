@@ -1,0 +1,11 @@
+---
+- name: Hardening baseline para RHEL 7, 8 y 9
+  hosts: all
+  become: true
+  vars:
+    apply_ssh_hardening: true
+    apply_firewall_hardening: true
+    apply_auditd_hardening: true
+    apply_packages_hardening: true
+  roles:
+    - rhel_baseline

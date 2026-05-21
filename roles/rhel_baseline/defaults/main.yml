@@ -1,0 +1,21 @@
+---
+# Defaults del rol de hardening RHEL
+
+rhel_baseline_packages_common:
+  - aide
+  - chrony
+  - vim-enhanced
+
+rhel_baseline_remove_packages_common:
+  - telnet
+  - rsh
+  - rsh-server
+
+rhel_baseline_firewalld_state: started
+rhel_baseline_firewalld_enabled: true
+
+rhel_baseline_selinux_state: enforcing
+
+rhel_baseline_ssh_port: 22
+rhel_baseline_ssh_root_login: "no"
+rhel_baseline_ssh_password_authentication: "no"

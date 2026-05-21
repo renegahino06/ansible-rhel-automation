@@ -1,0 +1,8 @@
+[rhel7]
+rhel7-server1 ansible_host=192.0.2.71
+# rhel7-server2 ansible_host=...
+
+[rhel7:vars]
+ansible_python_interpreter=/usr/bin/python
+ansible_become=true
+ansible_become_method=sudo

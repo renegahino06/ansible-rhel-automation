@@ -1,0 +1,7 @@
+[rhel9]
+rhel9-server1 ansible_host=192.0.2.91
+
+[rhel9:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_become=true
+ansible_become_method=sudo
